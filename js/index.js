@@ -20,35 +20,54 @@ document.addEventListener("mouseover", (e) => {
   }
 });
 */
-
 /*=======================New Js============================== */
-const article = document.querySelector('article');
+let constrain = 20;
+let mouseOverContainer = document.getElementById("ex1");
+let ex1Layer = document.getElementById("ex1-layer");
 
-// to compute the center of the card retrieve its coordinates and dimensions
-const {
-  x, y, width, height,
-} = article.getBoundingClientRect();
-const cx = x + width / 2;
-const cy = y + height / 2;
+function transforms(x, y, el) {
+  let box = el.getBoundingClientRect();
+  let calcX = -(y - box.y - (box.height / 2)) / constrain;
+  let calcY = (x - box.x - (box.width / 2)) / constrain;
+  
+  return "perspective(100px) "
+    + "   rotateX("+ calcX/4 +"deg) "
+    + "   rotateY("+ calcY/2 +"deg) ";
+};
 
-// following the mousemove event compute the distance betwen the cursor and the center of the card
-function handleMove(e) {
-  const { pageX, pageY } = e;
-
-  // ! consider the relative distance in the [-1, 1] range
-  const dx = (cx - pageX) / (width / 2);
-  const dy = (cy - pageY) / (height / 2);
-
-  // rotate the card around the x axis, according to the vertical distance, and around the y acis, according to the horizontal gap 
-  this.style.transform = `rotateX(${10 * dy * -1}deg) rotateY(${10 * dx}deg)`;
+ function transformElement(el, xyEl) {
+  el.style.transform  = transforms.apply(null, xyEl);
 }
 
-// following the mouseout event reset the transform property
-function handleOut() {
-  this.style.transform = 'initial';
-}
+mouseOverContainer.onmousemove = function(e) {
+  let xy = [e.clientX, e.clientY];
+  let position = xy.concat([ex1Layer]);
 
-article.addEventListener('mousemove', handleMove);
-article.addEventListener('mouseout', handleOut);
-
+  window.requestAnimationFrame(function(){
+    transformElement(ex1Layer, position);
+  });
+};
 /*=======================New Js End============================== */
+/*=======================Animate Js End============================== */
+const headingNew = document.querySelector('.animateHead');
+const btnNew = document.querySelector('.pop-animamtion-btn');
+headingNew.innerHTML = headingNew.textContent.replace(/\S/g, "<span class='animateSpan'>$&</span>")
+
+document.querySelectorAll('.animateSpan').forEach((span, index) => {
+  span.style.setProperty('--delay', `${index * 0.1}s`)
+});
+
+
+btnNew.addEventListener("click", e => {
+    headingNew.style.setProperty('--animation', e.target.getAttribute('data-animation'))
+    
+    headingNew.classList.remove('animate')
+    void headingNew.offsetWidth
+    headingNew.classList.add('animate')
+  })
+
+  btnNew.click();
+  setInterval(() => {
+    btnNew.click();
+  }, 3900);
+/*=======================Animate Js End============================== */
